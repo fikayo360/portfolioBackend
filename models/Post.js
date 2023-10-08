@@ -16,23 +16,14 @@ const PostSchema = new mongoose.Schema({
     postBody:{
         type:String
     },
-    url:{
-        type:String
-    },
     
     postComments:[
     {
     PostId:{
         type:String
     },
-    PostcommentAuthor:{
-        type:String
-    },
-    PostcommentProfilePic:{
-        type:String
-    },
-        PostcommentBody:{
-        type:String
+    PostcommentBody:{
+    type:String
     },
     Timecreated:{
         type:Date

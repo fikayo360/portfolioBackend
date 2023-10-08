@@ -15,13 +15,11 @@ const publishPost = async(req,res) => {
 const commentPost = async(req,res) => {
     try{
         const Timecreated = Date.now()
-        const {PostId,PostcommentAuthor,PostcommentBody,PostcommentProfilePic} = req.body
-        let newComment = {PostId,PostcommentAuthor,PostcommentProfilePic,PostcommentBody,Timecreated}
+        const {PostId,PostcommentBody} = req.body
+        let newComment = {PostId,PostcommentBody,Timecreated}
         let currentPost = await Post.findById({_id:PostId})
-        
         currentPost.postComments.push(newComment)
         await currentPost.save()
-        
         res.status(StatusCodes.OK).json('comment added succesfully')
     }catch(err){
         return res.status(StatusCodes.BAD_REQUEST).json(err)

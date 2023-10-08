@@ -2,7 +2,7 @@ const User = require('../models/User')
 const bcrypt = require("bcrypt")
 const { StatusCodes } = require('http-status-codes');
 const { attachCookiesToResponse, createTokenUser } = require('../utils');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 
 const register = async(req,res) => {
     const {username,password} = req.body
@@ -14,14 +14,12 @@ const register = async(req,res) => {
     const foundUser = await User.findOne({username})
 
     if (foundUser) {
-        res.status(StatusCodes.BAD_REQUEST).json('user already exists')
+        return res.status(StatusCodes.BAD_REQUEST).json('user already exists')
     }
 
     try{
         const savedUser  = await User.create({username,password: bcrypt.hashSync(password, 10)})
-        const tokenUser = createTokenUser(savedUser)
-        attachCookiesToResponse({res,user:tokenUser})
-        res.status(StatusCodes.OK).json({user:tokenUser})
+        return res.status(StatusCodes.OK).json('user created successfully')
     }
     catch(err){
         return res.status(StatusCodes.BAD_REQUEST).json('err creating user')
@@ -36,18 +34,35 @@ const login = async(req,res) => {
       }
     try{  
     const foundUser = await User.findOne({username})
-    console.log(foundUser);
     if(!foundUser){
         return res.status(StatusCodes.BAD_REQUEST).json('that user does not exist')
     }
-    
+  
     if(!bcrypt.compareSync(password,foundUser.password)){
        return res.status(StatusCodes.BAD_REQUEST).json('wrong password')
+     }else{
+        const { password, ...others} = foundUser._doc;
+        console.log(others)
+        const {username,_id} = others;
+        console.log({username,_id})
+        let tokenUser = {username,_id}
+        let secretKey = process.env.JWT_SECRET
+        const token = jwt.sign(tokenUser, secretKey, {
+            expiresIn: process.env.JWT_LIFETIME
+          });
+        return res.status(StatusCodes.OK).json({tokenUser,token})
      }
-     const { password: foundUserPassword, ...others } = foundUser._doc;
-     const tokenUser = createTokenUser(others);
-     let cookie = attachCookiesToResponse({ res, user: tokenUser });
-     return res.status(StatusCodes.OK).json({ user: others,cookie });
+    
+    //   const {username,_id:userId} = others;
+    //   console.log({username,userId})
+    //   return res.status(StatusCodes.OK).json({username,userId})
+
+    //   const cookie = createJWT(username,userId)
+    //  const tokenUser = createTokenUser(others);
+    //  const {username,userId} = tokenUser;
+    //  const cookie = createJWT(username,userId)
+    //  console.log(cookie);
+    //  return res.status(StatusCodes.OK).json({ user: others,cookie });
     }
     catch(err){
         return res.status(StatusCodes.BAD_REQUEST).json('error Authenticating user')
