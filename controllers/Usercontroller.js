@@ -1,7 +1,6 @@
 const User = require('../models/User')
 const bcrypt = require("bcrypt")
 const { StatusCodes } = require('http-status-codes');
-const { attachCookiesToResponse, createTokenUser } = require('../utils');
 const jwt = require('jsonwebtoken')
 
 const register = async(req,res) => {
@@ -52,17 +51,6 @@ const login = async(req,res) => {
           });
         return res.status(StatusCodes.OK).json({tokenUser,token})
      }
-    
-    //   const {username,_id:userId} = others;
-    //   console.log({username,userId})
-    //   return res.status(StatusCodes.OK).json({username,userId})
-
-    //   const cookie = createJWT(username,userId)
-    //  const tokenUser = createTokenUser(others);
-    //  const {username,userId} = tokenUser;
-    //  const cookie = createJWT(username,userId)
-    //  console.log(cookie);
-    //  return res.status(StatusCodes.OK).json({ user: others,cookie });
     }
     catch(err){
         return res.status(StatusCodes.BAD_REQUEST).json('error Authenticating user')
