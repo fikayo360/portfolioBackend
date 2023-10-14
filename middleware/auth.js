@@ -2,7 +2,6 @@
 const { isTokenValid } = require('../utils/jwt');
 
 const authUser = async (req, res, next) => {
-  
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer')) {
     return res.status(401).json("no token! access denied")
