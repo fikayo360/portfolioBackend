@@ -35,7 +35,7 @@ const login = async(req,res) => {
     const foundUser = await User.findOne({username})
     if(!foundUser){
         return res.status(StatusCodes.BAD_REQUEST).json('that user does not exist')
-    }
+    }    
   
     if(!bcrypt.compareSync(password,foundUser.password)){
        return res.status(StatusCodes.BAD_REQUEST).json('wrong password')
